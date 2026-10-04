@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}Find Emergency Help - SafeRoute{% endblock %}
+
+{% block content %}
+
+<section class="emergency-page">
+
+    <div class="container py-5">
+
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-danger-subtle text-danger px-3 py-2 mb-3">
+                Emergency Assistance
+            </span>
+
+            <h1 class="fw-bold">What kind of help do you need?</h1>
+
+            <p class="text-muted mt-3">
+                Select the emergency type and SafeRoute will find the
+                most relevant nearby facility for you.
+            </p>
+        </div>
+
+        <!-- Emergency Options -->
+        <div class="row g-4 justify-content-center">
+
+            <!-- Medical -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card emergency-option h-100 shadow-sm"
+                     onclick="selectEmergency('medical', this)">
+
+                    <div class="card-body text-center p-4">
+
+                        <div class="emergency-icon medical-icon">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+
+                        <h4 class="mt-3">Medical</h4>
+
+                        <p class="text-muted small">
+                            Medical emergency or immediate healthcare
+                            assistance.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accident -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card emergency-option h-100 shadow-sm"
+                     onclick="selectEmergency('accident', this)">
+
+                    <div class="card-body text-center p-4">
+
+                        <div class="emergency-icon accident-icon">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+
+                        <h4 class="mt-3">Accident</h4>
+
+                        <p class="text-muted small">
+                            Road accident or situation requiring
+                            immediate assistance.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card emergency-option h-100 shadow-sm"
+                     onclick="selectEmergency('fire', this)">
+
+                    <div class="card-body text-center p-4">
+
+                        <div class="emergency-icon fire-icon">
+                            <i class="bi bi-fire"></i>
+                        </div>
+
+                        <h4 class="mt-3">Fire</h4>
+
+                        <p class="text-muted small">
+                            Fire emergency requiring fire and rescue
+                            services.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Police -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card emergency-option h-100 shadow-sm"
+                     onclick="selectEmergency('police', this)">
+
+                    <div class="card-body text-center p-4">
+
+                        <div class="emergency-icon police-icon">
+                            <i class="bi bi-shield-fill-check"></i>
+                        </div>
+
+                        <h4 class="mt-3">Police</h4>
+
+                        <p class="text-muted small">
+                            Crime, safety issue or police assistance.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Location Section -->
+        <div class="location-card shadow-sm mt-5">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold">
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                    Your Location
+                </h4>
+
+                <p class="text-muted">
+                    Enter your current location to find nearby
+                    emergency facilities.
+                </p>
+
+                <div class="input-group mt-3">
+
+                    <input
+                        type="text"
+                        id="sourceLocation"
+                        class="form-control"
+                        placeholder="Enter your current location"
+                    >
+
+                    <button
+                        class="btn btn-outline-danger"
+                        type="button"
+                        onclick="useCurrentLocation()">
+
+                        <i class="bi bi-crosshair"></i>
+                        Use Current Location
+
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Continue Button -->
+        <div class="text-center mt-4">
+
+            <button
+                id="findHelpBtn"
+                class="btn btn-danger btn-lg px-5"
+                onclick="findEmergencyHelp()"
+                disabled>
+
+                <i class="bi bi-search"></i>
+                Find Emergency Help
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+.emergency-page {
+    min-height: 80vh;
+    background: #f8f9fa;
+}
+
+.emergency-option {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 18px;
+    transition: all 0.25s ease;
+}
+
+.emergency-option:hover {
+    transform: translateY(-5px);
+}
+
+.emergency-option.selected {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.emergency-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    font-size: 26px;
+}
+
+.medical-icon {
+    background: #ffe5e5;
+    color: #dc3545;
+}
+
+.accident-icon {
+    background: #fff0d9;
+    color: #fd7e14;
+}
+
+.fire-icon {
+    background: #ffe5d9;
+    color: #e8590c;
+}
+
+.police-icon {
+    background: #e7efff;
+    color: #0d6efd;
+}
+
+.location-card {
+    background: white;
+    border-radius: 18px;
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+let selectedEmergency = null;
+
+
+function selectEmergency(type, element) {
+
+    selectedEmergency = type;
+
+    // Remove previous selection
+    document.querySelectorAll(".emergency-option")
+        .forEach(card => card.classList.remove("selected"));
+
+    // Highlight selected card
+    element.classList.add("selected");
+
+    updateButton();
+
+}
+
+
+function updateButton() {
+
+    const location =
+        document.getElementById("sourceLocation").value.trim();
+
+    const button =
+        document.getElementById("findHelpBtn");
+
+    button.disabled =
+        !(selectedEmergency && location);
+
+}
+
+
+document.getElementById("sourceLocation")
+    .addEventListener("input", updateButton);
+
+
+function useCurrentLocation() {
+
+    if (!navigator.geolocation) {
+
+        alert("Geolocation is not supported by your browser.");
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            document.getElementById("sourceLocation").value =
+                `${latitude}, ${longitude}`;
+
+            updateButton();
+
+        },
+
+        function() {
+
+            alert(
+                "Unable to get your location. Please enter it manually."
+            );
+
+        }
+
+    );
+
+}
+
+
+function findEmergencyHelp() {
+
+    if (!selectedEmergency) {
+        alert("Please select an emergency type.");
+        return;
+    }
+
+    const location =
+        document.getElementById("sourceLocation").value.trim();
+
+    if (!location) {
+        alert("Please enter your current location.");
+        return;
+    }
+
+    // Temporary navigation.
+    // We will connect this to Django search logic in the next step.
+
+    window.location.href =
+        `/emergency/results/?type=${selectedEmergency}&location=${encodeURIComponent(location)}`;
+
+}
+
+</script>
+
+{% endblock %}

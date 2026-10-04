@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}{{ facility.name }} - SafeRoute{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <a
+        href="{% url 'facilities' %}"
+        class="text-decoration-none"
+    >
+        <i class="bi bi-arrow-left"></i>
+        Back to Facilities
+    </a>
+
+
+    <div class="row g-4 mt-3">
+
+        <!-- Facility information -->
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-5">
+
+                    <div class="facility-large-icon">
+
+                        {% if facility.facility_type == "medical" %}
+
+                            <i class="bi bi-hospital-fill"></i>
+
+                        {% elif facility.facility_type == "fire" %}
+
+                            <i class="bi bi-fire"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-shield-fill-check"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <span class="badge bg-danger-subtle text-danger mt-4">
+                        {{ facility.get_facility_type_display }}
+                    </span>
+
+
+                    <h1 class="fw-bold mt-3">
+                        {{ facility.name }}
+                    </h1>
+
+
+                    <p class="text-muted">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ facility.address }}
+
+                    </p>
+
+
+                    <hr>
+
+
+                    <div class="detail-row">
+
+                        <span>
+                            <i class="bi bi-telephone"></i>
+                            Contact
+                        </span>
+
+                        <strong>
+                            {{ facility.contact }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span>
+                            <i class="bi bi-geo-alt"></i>
+                            Latitude
+                        </span>
+
+                        <strong>
+                            {{ facility.latitude }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span>
+                            <i class="bi bi-geo-alt"></i>
+                            Longitude
+                        </span>
+
+                        <strong>
+                            {{ facility.longitude }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span>
+                            <i class="bi bi-shield-check"></i>
+                            Emergency Service
+                        </span>
+
+                        {% if facility.emergency_service %}
+
+                            <strong class="text-success">
+                                Available
+                            </strong>
+
+                        {% else %}
+
+                            <strong class="text-danger">
+                                Not Available
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="d-flex gap-2 mt-4">
+
+                        <a
+                            href="tel:{{ facility.contact }}"
+                            class="btn btn-danger flex-grow-1"
+                        >
+                            <i class="bi bi-telephone-fill"></i>
+                            Call Facility
+                        </a>
+
+                        <a
+                            href="https://www.google.com/maps/search/?api=1&query={{ facility.latitude }},{{ facility.longitude }}"
+                            target="_blank"
+                            class="btn btn-outline-danger"
+                        >
+                            <i class="bi bi-map"></i>
+                            Open Map
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Quick action -->
+
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold">
+                        Need Emergency Help?
+                    </h4>
+
+                    <p class="text-muted">
+                        Start an emergency request and let SafeRoute
+                        help you find the most suitable facility.
+                    </p>
+
+
+                    <a
+                        href="/emergency/"
+                        class="btn btn-danger w-100"
+                    >
+                        <i class="bi bi-lightning-fill"></i>
+                        Find Emergency Help
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+.facility-large-icon {
+
+    width: 70px;
+    height: 70px;
+
+    border-radius: 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffe5e5;
+    color: #dc3545;
+
+    font-size: 32px;
+}
+
+.detail-row {
+
+    display: flex;
+    justify-content: space-between;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eee;
+}
+
+.detail-row span {
+    color: #6c757d;
+}
+
+</style>
+
+{% endblock %}

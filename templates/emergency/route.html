@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block title %}Route - SafeRoute{% endblock %}
+
+
+{% block content %}
+
+<div class="route-page">
+
+    <div class="container py-4">
+
+        <!-- Back -->
+        <a
+            href="javascript:history.back()"
+            class="text-decoration-none"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back to Results
+        </a>
+
+
+        <!-- Header -->
+        <div class="mt-4 mb-4">
+
+            <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                Emergency Route
+            </span>
+
+            <h1 class="fw-bold mt-3">
+                Route to {{ facility.name }}
+            </h1>
+
+            <p class="text-muted">
+                Follow the route below to reach the emergency facility.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- Map -->
+            <div class="col-lg-8">
+
+                <div class="card border-0 shadow-sm map-card">
+
+                    <div class="card-body p-0">
+
+                        <div id="map"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Facility Information -->
+            <div class="col-lg-4">
+
+                <div class="card border-0 shadow-sm facility-summary">
+
+                    <div class="card-body p-4">
+
+                        <div class="facility-big-icon">
+
+                            {% if facility.facility_type == "medical" %}
+
+                                <i class="bi bi-hospital-fill"></i>
+
+                            {% elif facility.facility_type == "fire" %}
+
+                                <i class="bi bi-fire"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-shield-fill-check"></i>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <span class="badge bg-success mt-3">
+                            Emergency Available
+                        </span>
+
+
+                        <h3 class="fw-bold mt-3">
+                            {{ facility.name }}
+                        </h3>
+
+
+                        <p class="text-muted">
+
+                            <i class="bi bi-geo-alt-fill"></i>
+
+                            {{ facility.address }}
+
+                        </p>
+
+
+                        <hr>
+
+                        <div
+    id="routeInfo"
+    class="route-info mb-3"
+>
+    <div class="route-stat">
+        <i class="bi bi-signpost-2-fill"></i>
+
+        <div>
+            <small>Distance</small>
+            <strong>Calculating...</strong>
+        </div>
+    </div>
+
+    <div class="route-stat">
+        <i class="bi bi-clock-fill"></i>
+
+        <div>
+            <small>Estimated Time</small>
+            <strong>Calculating...</strong>
+        </div>
+    </div>
+</div>
+
+
+                        <div class="info-row">
+
+                            <span>
+                                <i class="bi bi-building"></i>
+                                Facility Type
+                            </span>
+
+                            <strong>
+                                {{ facility.get_facility_type_display }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span>
+                                <i class="bi bi-telephone"></i>
+                                Contact
+                            </span>
+
+                            <strong>
+                                {{ facility.contact }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span>
+                                <i class="bi bi-signpost"></i>
+                                Coordinates
+                            </span>
+
+                            <strong>
+                                {{ facility.latitude }},
+                                {{ facility.longitude }}
+                            </strong>
+
+                        </div>
+
+
+                        <a
+                            href="tel:{{ facility.contact }}"
+                            class="btn btn-danger w-100 mt-4"
+                        >
+
+                            <i class="bi bi-telephone-fill"></i>
+
+                            Call Facility
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<!-- Leaflet CSS -->
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+
+<style>
+
+.route-page {
+    min-height: 80vh;
+    background: #f8f9fa;
+}
+
+.map-card {
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+#map {
+    height: 520px;
+    width: 100%;
+}
+
+.facility-summary {
+    border-radius: 18px;
+}
+
+.facility-big-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 16px;
+
+    background: #ffe5e5;
+    color: #dc3545;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+}
+
+.info-row {
+
+    display: flex;
+    justify-content: space-between;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #eee;
+
+    gap: 15px;
+}
+
+.info-row span {
+    color: #6c757d;
+}
+
+.route-info {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.route-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.route-stat i {
+    font-size: 20px;
+    color: #dc3545;
+}
+
+.route-stat small {
+    display: block;
+    color: #6c757d;
+}
+
+.route-stat strong {
+    display: block;
+    margin-top: 2px;
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+const facilityLatitude =
+    {{ facility.latitude }};
+
+const facilityLongitude =
+    {{ facility.longitude }};
+
+
+const userLatitude =
+    {% if latitude %}
+        {{ latitude }}
+    {% else %}
+        null
+    {% endif %};
+
+
+const userLongitude =
+    {% if longitude %}
+        {{ longitude }}
+    {% else %}
+        null
+    {% endif %};
+
+
+// Create map
+
+const map = L.map("map");
+
+
+// OpenStreetMap tiles
+
+L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+    {
+        attribution:
+            "Tiles &copy; Esri"
+    }
+).addTo(map);
+
+
+// Facility marker
+
+const facilityMarker =
+    L.marker([
+        facilityLatitude,
+        facilityLongitude
+    ]).addTo(map);
+
+
+facilityMarker.bindPopup(
+    "<b>{{ facility.name }}</b><br>Emergency Facility"
+);
+
+
+// If user coordinates exist
+
+if (
+    userLatitude !== null &&
+    userLongitude !== null
+) {
+
+    // User marker
+
+    const userMarker =
+        L.marker([
+            userLatitude,
+            userLongitude
+        ]).addTo(map);
+
+
+    userMarker.bindPopup(
+        "<b>Your Location</b>"
+    );
+
+
+    // Route line
+
+    // Get actual road route using OSRM
+
+const routeUrl =
+    `https://router.project-osrm.org/route/v1/driving/` +
+    `${userLongitude},${userLatitude};` +
+    `${facilityLongitude},${facilityLatitude}` +
+    `?overview=full&geometries=geojson`;
+
+
+fetch(routeUrl)
+    .then(response => response.json())
+    .then(data => {
+
+        if (
+            data.code === "Ok" &&
+            data.routes.length > 0
+        ) {
+
+            const route = data.routes[0];
+
+            // Convert route coordinates
+            const routeCoordinates =
+                route.geometry.coordinates.map(
+                    coordinate => [
+                        coordinate[1],
+                        coordinate[0]
+                    ]
+                );
+
+
+            // Draw actual road route
+            const routeLine =
+                L.polyline(
+                    routeCoordinates,
+                    {
+                        color: "#dc3545",
+                        weight: 6,
+                        opacity: 0.85
+                    }
+                ).addTo(map);
+
+
+            // Calculate distance
+            const distanceKm =
+                (route.distance / 1000).toFixed(2);
+
+
+            // Calculate duration
+            const durationMinutes =
+                Math.round(route.duration / 60);
+
+
+            // Route information
+            const routeInfo =
+                document.getElementById("routeInfo");
+
+
+            if (routeInfo) {
+
+                routeInfo.innerHTML = `
+                    <div class="route-stat">
+                        <i class="bi bi-signpost-2-fill"></i>
+                        <div>
+                            <small>Distance</small>
+                            <strong>${distanceKm} km</strong>
+                        </div>
+                    </div>
+
+                    <div class="route-stat">
+                        <i class="bi bi-clock-fill"></i>
+                        <div>
+                            <small>Estimated Time</small>
+                            <strong>${durationMinutes} min</strong>
+                        </div>
+                    </div>
+                `;
+
+            }
+
+
+            // Fit map to route
+
+            map.fitBounds(
+                routeLine.getBounds(),
+                {
+                    padding: [40, 40]
+                }
+            );
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(
+            "Unable to calculate route:",
+            error
+        );
+
+        map.fitBounds(
+            [
+                [userLatitude, userLongitude],
+                [facilityLatitude, facilityLongitude]
+            ],
+            {
+                padding: [40, 40]
+            }
+        );
+
+    });
+
+} else {
+
+    // If location isn't available
+
+    map.setView(
+        [
+            facilityLatitude,
+            facilityLongitude
+        ],
+        14
+    );
+
+}
+
+</script>
+
+{% endblock %}

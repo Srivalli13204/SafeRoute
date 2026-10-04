@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency History - SafeRoute{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <span class="badge bg-danger-subtle text-danger px-3 py-2">
+            Activity
+        </span>
+
+        <h1 class="fw-bold mt-3">
+            Emergency History
+        </h1>
+
+        <p class="text-muted">
+            View your previous emergency assistance requests.
+        </p>
+
+    </div>
+
+
+    {% if requests %}
+
+        <div class="row g-4">
+
+            {% for item in requests %}
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body p-4">
+
+                            <div class="d-flex justify-content-between">
+
+                                <h5 class="fw-bold">
+
+                                    {% if item.emergency_type == "medical" %}
+                                        <i class="bi bi-heart-pulse-fill text-danger"></i>
+                                    {% elif item.emergency_type == "fire" %}
+                                        <i class="bi bi-fire text-danger"></i>
+                                    {% elif item.emergency_type == "police" %}
+                                        <i class="bi bi-shield-fill-check text-primary"></i>
+                                    {% else %}
+                                        <i class="bi bi-car-front-fill text-warning"></i>
+                                    {% endif %}
+
+                                    {{ item.get_emergency_type_display }}
+
+                                </h5>
+
+
+                                <span class="badge bg-success-subtle text-success">
+                                    {{ item.get_status_display }}
+                                </span>
+
+                            </div>
+
+
+                            <hr>
+
+
+                            <p class="mb-2">
+
+                                <strong>From:</strong>
+
+                                {{ item.source_location }}
+
+                            </p>
+
+
+                            <p class="mb-2">
+
+                                <strong>Destination:</strong>
+
+                                {{ item.destination }}
+
+                            </p>
+
+
+                            <p class="text-muted small mb-0">
+
+                                <i class="bi bi-clock"></i>
+
+                                {{ item.created_at|date:"d M Y, h:i A" }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="text-center py-5">
+
+            <i
+                class="bi bi-clock-history"
+                style="font-size: 50px;"
+            ></i>
+
+            <h4 class="mt-3">
+                No emergency history yet
+            </h4>
+
+            <p class="text-muted">
+                Your emergency requests will appear here.
+            </p>
+
+            <a
+                href="/emergency/"
+                class="btn btn-danger"
+            >
+                Find Emergency Help
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

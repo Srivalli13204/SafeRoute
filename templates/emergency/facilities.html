@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Facilities - SafeRoute{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <span class="badge bg-danger-subtle text-danger px-3 py-2">
+            Emergency Network
+        </span>
+
+        <h1 class="fw-bold mt-3">
+            Emergency Facilities
+        </h1>
+
+        <p class="text-muted">
+            Explore hospitals, fire stations and police stations
+            available through SafeRoute.
+        </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        {% for facility in facilities %}
+
+        <div class="col-md-6 col-lg-4">
+
+            <div class="card border-0 shadow-sm h-100 facility-card">
+
+                <div class="card-body p-4">
+
+                    <div class="facility-icon">
+
+                        {% if facility.facility_type == "medical" %}
+
+                            <i class="bi bi-hospital-fill"></i>
+
+                        {% elif facility.facility_type == "fire" %}
+
+                            <i class="bi bi-fire"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-shield-fill-check"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <span class="badge bg-light text-dark mt-3">
+                        {{ facility.get_facility_type_display }}
+                    </span>
+
+
+                    <h4 class="fw-bold mt-3">
+                        {{ facility.name }}
+                    </h4>
+
+
+                    <p class="text-muted">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ facility.address }}
+
+                    </p>
+
+
+                    {% if facility.emergency_service %}
+
+                    <div class="text-success small mb-3">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        Emergency service available
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{% url 'facility_detail' facility.id %}"
+                        class="btn btn-outline-danger w-100"
+                    >
+
+                        View Details
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="text-center py-5">
+
+            <h4>No facilities available</h4>
+
+            <p class="text-muted">
+                Add emergency facilities from the admin panel.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+.facility-card {
+    border-radius: 18px;
+    transition: 0.25s;
+}
+
+.facility-card:hover {
+    transform: translateY(-5px);
+}
+
+.facility-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: #ffe5e5;
+    color: #dc3545;
+
+    font-size: 28px;
+}
+
+</style>
+
+{% endblock %}
